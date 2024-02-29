@@ -14,7 +14,7 @@ esquerdo.
 #### Física:
 - **aceleração (a)**: `1 px/t`
 - **desaceleração**: `2 px/t`
-- **velocidade (v)**: `v = a * t, (v $$\leq$$ 8 px/t)`
+- **velocidade (v)**: `v = a * t, (v <= 8 px/t)`
 - **Distancia (d)**: `d = v * t`
 #### Rotação:
 - **Rotação da base**: `(10 - 0.75 * abs(v)) graus/t` (Nota: quanto mais rápido fores mais devagar rodas)
