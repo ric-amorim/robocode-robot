@@ -8,6 +8,8 @@ public class MyFirstRobot extends Robot {
             ahead(100);
             turnGunRight(360);
             back(100);
+            back(100);
+            back(100);
             ahead(100);
             ahead(100);
             turnGunRight(360);
