@@ -17,33 +17,45 @@ public class PartyBot extends AdvancedRobot {
     double posX;
     double posY;
 
+    /**
+     * robot's init function
+     */
     public void run() {
-        int height = (int) getBattleFieldHeight();
-        int width = (int) getBattleFieldWidth();
-        System.out.println(height);
-        System.out.println(width);
         setAdjustGunForRobotTurn(true); // Keep the gun still when we turn
         while (true) {
             posX = getX();
             posY = getY();
-            useGun();
             useBody();
             useRadar();
             execute();
         }
     }
 
-    public void useGun(){
-    }
-
+    /**
+     * Turn and move robot's body
+     */
     public void useBody(){
+        double angle = random.nextDouble() * 360;
         double distance = random.nextDouble() * 150 + 50;
+        if(random.nextDouble() > 0.5){
+            setTurnRight(angle);
+        }else{
+            setTurnLeft(angle);
+        }
         setAhead(distance);
     }
 
+    /**
+     * Turn robot's radar
+     */
     public void useRadar(){
         turnRadarRight(360);
     }
+
+    /**
+     * When scanned a robot, turn the radar and gun to the robot and shoot
+     * 
+     */
     public void onScannedRobot(ScannedRobotEvent e) {
 
         double radarDirection = getHeading() + e.getBearing() - getRadarHeading();
@@ -51,24 +63,26 @@ public class PartyBot extends AdvancedRobot {
         double gunTurnAmt = normalRelativeAngleDegrees(getHeading() + e.getBearing() - getGunHeading());
         setTurnGunRight(gunTurnAmt);
 
-        // using a spiral technique (Rodeia o inimigo enquanto dispara. Mantém o movimento, mas é mais eficiente quanto mais próximo estiver)
-        setTurnRight(e.getBearing() + 100);
-
-        if(e.getDistance() < 200 && getEnergy() > 70){
-            setFire(3);
-        }else if(e.getDistance() < 400 && getEnergy() > 40){
-            setFire(2);
-        }else {
-            setFire(1);
+        // using a spiral technique sometimes
+        if (e.getDistance() < 400) {
+            setTurnRight(e.getBearing() + 100);
         }
 
-        useBody();
-        
-    }
+            if (e.getDistance() < 200 && getEnergy() > 70) {
+                setFire(3);
+            } else if (e.getDistance() < 400 && getEnergy() > 40) {
+                setFire(2);
+            } else {
+                setFire(1);
+            }
 
-    // O robô não fica preso na parede, mas está a perder muita energia a ir contra as paredes
-    // TODO: reduzir o nº de choques com as paredes
-    // sugestão: obter as dimensões da arena e quando o robô se aproximar duma parede, andar/virar no sentido oposto
+            useBody();
+
+        }
+
+    /**
+     * When hit a wall, turn the robot to the opposite direction
+     */
     public void onHitWall(HitWallEvent e){
 
         // 1º quadrante
@@ -88,27 +102,12 @@ public class PartyBot extends AdvancedRobot {
             turnRight(e.getBearing() + 90 + 45 );
         }
         ahead(100);
-        /*
-        int n = random.nextInt(2);
-        if(n == 1){
-            turnRight(e.getBearing() + 90);
-        }
-
-        else{
-            turnRight(e.getBearing() - 90);
-        }
-        ahead(-50);
-         */
-        /*
-        if (e.getBearing() > -90 && e.getBearing() <= 90) {
-            setBack(100);
-        }else {
-            setAhead(100);
-        }
-         */
 
     }
 
+    /**
+     * When hit a robot, turn the robot to the opposite direction
+     */
     public void onHitRobot(HitRobotEvent e){
 
         if (e.getBearing() >= 0 && e.getBearing() < 90) {
@@ -127,17 +126,11 @@ public class PartyBot extends AdvancedRobot {
             turnRight(e.getBearing() + 90);
         }
         ahead(100);
-        setTurnGunRight(360);
-        /*
-        if (e.getBearing() > -90 && e.getBearing() <= 90) {
-            setTurnRight(e.getBearing() - 90);
-            setBack(100);
-        }else {
-            setTurnRight(e.getBearing() + 90);
-            setAhead(100);
-        }
-         */
     }
+
+    /**
+     *  When hit by bullet, move randomly
+     */
     public void onHitByBullet(HitByBulletEvent e){
         useBody();
     }
